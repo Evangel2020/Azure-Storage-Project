@@ -26,7 +26,6 @@ const UploadPage = () => {
   //  To create a local Storage
   localStorage.setItem("Image", file);
   localStorage.setItem("Key", key);
-  console.log(file)
 
   const handleUpload = async () => {
     try {
@@ -39,7 +38,6 @@ const UploadPage = () => {
         "containerName",
         currentContainer,
       );
-      console.log(formData)
 
       const response = await axios.post(
         "https://victorious-puce-pigeon.cyclic.app/api/files/upload",
