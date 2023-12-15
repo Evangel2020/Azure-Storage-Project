@@ -8,9 +8,10 @@ import {
   Divider,
   AbsoluteCenter,
   Input,
+  Spinner,
 } from "@chakra-ui/react";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import toast from "react-hot-toast";
 
@@ -19,28 +20,52 @@ const UploadPage = () => {
 
   const [file, setFile] = useState("");
   const [key, setKey] = useState("");
+  const [creating, setCreating] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [container, setContainer] = useState("");
   //  To create a local Storage
   localStorage.setItem("Image", file);
   localStorage.setItem("Key", key);
+  console.log(file)
 
   const handleUpload = async () => {
     try {
+      setIsLoading(true)
       const formData = new FormData();
+      const currentContainer = localStorage.getItem("container")
 
+      formData.append("file", file, file.name);
       formData.append(
         "containerName",
-        "store-a4dfe9c0-9b54-11ee-847a-fd406089e1df"
+        currentContainer,
       );
-      formData.append("file", file);
+      console.log(formData)
 
       const response = await axios.post(
         "https://victorious-puce-pigeon.cyclic.app/api/files/upload",
-        formData
+        formData,
+      );
+      const data = response.data;
+      setIsLoading(false)
+      toast.success(data.message);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  
+  const createContainer = async () => {
+    try {
+      setCreating(true)
+      const response = await axios.post(
+        "https://victorious-puce-pigeon.cyclic.app/api/files/create-container",
       );
       const data = response.data;
 
       console.log(data);
-      toast.success("File uploaded successfully");
+      localStorage.setItem("container", data.data)
+      setCreating(false)
+      toast.success(data.message);
+      setContainer(data.data)
     } catch (error) {
       console.log(error);
     }
@@ -60,7 +85,26 @@ const UploadPage = () => {
         width={{ base: "50%", md: "20%" }}
         height={{ base: "10%", md: "10%" }}
         alt="picture"
-      />
+      /><br/><br/>
+      <Text>
+        <Heading color="#0077b6" fontSize={{ base: "md", md: "4xl" }}>
+          Practical Demonstration on Azure Storage
+        </Heading>
+      </Text>
+      {
+        creating ? <><br/><Spinner /><br/></> : null
+      }
+      <Button
+        onClick={createContainer}
+        bg="blue.200"
+        padding="30px"
+        marginTop="4rem"
+      >
+        Create a container
+      </Button><br/><br/>
+      {
+        container ?
+      <>
       <Flex
         height={{ base: "50vh", md: "80vh" }}
         borderRadius="20px"
@@ -83,13 +127,13 @@ const UploadPage = () => {
             alignItems="center"
           >
             <Text>
-              <Heading color="#0077b6" fontSize={{ base: "md", md: "5xl" }}>
-                Drag and drop files here
+              <Heading color="#0077b6" fontSize={{ base: "md", md: "4xl" }}>
+                Drag and drop files to container
               </Heading>
               <Box position="relative" padding="10">
                 <Divider />
                 <AbsoluteCenter bg="transparent" px="12">
-                  or
+                  {file ? file.name : "or"}
                 </AbsoluteCenter>
               </Box>
             </Text>
@@ -127,7 +171,7 @@ const UploadPage = () => {
                   type={"file"}
                   hidden
                   onChange={(e) => {
-                    const file = e.target.files[0].name;
+                    const file = e.target.files[0];
                     setFile(file);
                   }}
                 />
@@ -135,7 +179,7 @@ const UploadPage = () => {
               </label>
             </Box>
 
-            <Input
+            {/* <Input
               htmlSize={30}
               width="auto"
               onChange={(e) => {
@@ -146,7 +190,7 @@ const UploadPage = () => {
                 border: "1px solid gray",
                 padding: "5px 10px",
               }}
-            />
+            /> */}
           </Box>
           {/* <img src={upLoaded} /> */}
           <Box
@@ -159,6 +203,9 @@ const UploadPage = () => {
             <Text color="gray" fontSize="2xl">
               Maximum file size is 100mb
             </Text>
+            {
+              isLoading ? <><br/><Spinner /><br/></> : null
+            }
             <Button
               onClick={handleUpload}
               bg="blue.200"
@@ -169,7 +216,18 @@ const UploadPage = () => {
             </Button>
           </Box>
         </Box>
-      </Flex>
+      </Flex> 
+      <Link
+        bg="blue.200"
+        padding="20px"
+        marginTop="4rem"
+        to="/download"
+      >
+        View Blobs in Container
+      </Link><br/><br/>
+      </>
+      : null
+      }
     </Box>
   );
 };
