@@ -32,14 +32,14 @@ const DownloadPage = () => {
 
     const deleteContainer = async () => {
         try {
-          setCreating(true)
-          await axios.delete(
-            `https://victorious-puce-pigeon.cyclic.app/api/files?containerName=${container}`,
-          );    
-          setCreating(false)
-          navigate("/")
+            setCreating(true)
+            await axios.delete(
+                `https://victorious-puce-pigeon.cyclic.app/api/files?containerName=${container}`,
+            );
+            setCreating(false)
+            navigate("/")
         } catch (error) {
-          console.log(error);
+            console.log(error);
         }
     };
 
@@ -51,25 +51,25 @@ const DownloadPage = () => {
                 </Text>
             </Box>
             {
-                blobs ? 
-                blobs.map((blob, index) => (
-                    <Flex marginTop="4rem" justifyContent="space-between" alignItems="center" 
-                    border="2px" borderColor='gray.400' bg="white" padding="15px 10px" key={index}>
-                    <Box display="flex" justifyContent="space-between" alignItems="center">
-                        <IoImagesOutline color="blue" fontSize="2rem" />
-                        <Text fontSize="2xl" marginLeft="4px">{blob.blobName}</Text>
-                    </Box>
-    
-                    {/* <Text fontSize="2xl">2023.12.14</Text> */}
-    
-                    <Button fontSize="2xl" color="blue"><a href={`${blob.url}`} target='_blank' rel="noreferrer">Download</a></Button>
-                </Flex>
-                ))
-                : 
-                <Spinner />
-            }<br/>
+                blobs ?
+                    blobs.map((blob, index) => (
+                        <Flex marginTop="4rem" justifyContent="space-between" alignItems="center"
+                            border="2px" borderColor='gray.400' bg="white" padding="15px 10px" key={index}>
+                            <Box display="flex" justifyContent="space-between" alignItems="center">
+                                <IoImagesOutline color="blue" fontSize="2rem" />
+                                <Text fontSize="2xl" marginLeft="4px">{blob.blobName}</Text>
+                            </Box>
+
+                            {/* <Text fontSize="2xl">2023.12.14</Text> */}
+
+                            <Button fontSize="2xl" color="blue"><a href={`${blob.url}`} target='_blank' rel="noreferrer">Download</a></Button>
+                        </Flex>
+                    ))
+                    :
+                    <Spinner />
+            }<br />
             {
-                creating ? <><br/><Spinner /><br/><br/></> : null
+                creating ? <><br /><Spinner /><br /><br /></> : null
             }
             <Button onClick={deleteContainer} fontSize="2xl" color="red">Delete Container</Button>
         </Box >
